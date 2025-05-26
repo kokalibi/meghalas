@@ -2,20 +2,19 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8">
-  <title>Maximális vízmennyiség + Oszlopdiagram</title>
+  <title>Maximális vízmennyiség diagrammal</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      background-color: #f9f9f9;
+      background: #f4f4f4;
     }
     input, button {
       padding: 10px;
       font-size: 16px;
-      margin-top: 10px;
     }
     #result {
-      margin-top: 20px;
+      margin-top: 15px;
       font-size: 18px;
       color: green;
     }
@@ -27,75 +26,76 @@
 </head>
 <body>
 
-  <h2>Maximális vízmennyiség kiszámítása + Oszlopdiagram</h2>
-  <label for="heightsInput">Add meg a magasságokat (pl. 1,8,6,2,5,4,8,3,7):</label><br>
-  <input type="text" id="heightsInput">
-  <br>
+  <h2>Maximális vízmennyiség diagrammal</h2>
+  <label for="heightsInput">Magasságok (pl. 1,8,6,2,5,4,8,3,7):</label><br>
+  <input type="text" id="heightsInput" value="1,8,6,2,5,4,8,3,7">
+  <br><br>
   <button onclick="calculateAndDraw()">Számítás és diagram</button>
 
   <div id="result"></div>
-  <canvas id="chartCanvas" width="600" height="400"></canvas>
+  <canvas id="chartCanvas" width="700" height="400"></canvas>
 
-  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    let chart; 
+    let chart;
 
     function calculateAndDraw() {
       const input = document.getElementById('heightsInput').value;
       const height = input.split(',').map(Number);
 
-
       if (height.length < 2 || height.some(h => isNaN(h))) {
-        document.getElementById('result').textContent = 'Hibás bemenet! Adj meg legalább 2 számot, vesszővel elválasztva.';
+        document.getElementById('result').textContent = 'Hibás bemenet!';
         return;
       }
 
-      let left = 0, right = height.length - 1, maxArea = 0;
+      // Max vízmennyiség számítása + indexek mentése
+      let left = 0, right = height.length - 1;
+      let maxArea = 0, bestLeft = 0, bestRight = 0;
+
       while (left < right) {
         const width = right - left;
         const minHeight = Math.min(height[left], height[right]);
         const area = width * minHeight;
-        maxArea = Math.max(maxArea, area);
+
+        if (area > maxArea) {
+          maxArea = area;
+          bestLeft = left;
+          bestRight = right;
+        }
+
         if (height[left] < height[right]) left++;
         else right--;
       }
 
       document.getElementById('result').textContent = `Maximális vízmennyiség: ${maxArea}`;
 
-      // Diagram kirajzolása
-      const labels = height.map((_, i) => `x=${i}`);
+      // Színek beállítása
+      const backgroundColors = height.map((_, i) =>
+        i === bestLeft || i === bestRight ? 'red' : 'black'
+      );
 
-      if (chart) chart.destroy(); // Előző diagram törlése
-
+      // Diagram újrarajzolása
+      if (chart) chart.destroy();
       const ctx = document.getElementById('chartCanvas').getContext('2d');
       chart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: labels,
+          labels: height.map((_, i) => `x=${i}`),
           datasets: [{
             label: 'Magasságok',
             data: height,
-            backgroundColor: 'rgba(54, 162, 235, 0.7)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
+            backgroundColor: backgroundColors
           }]
         },
         options: {
           scales: {
             x: {
-              title: {
-                display: true,
-                text: 'Index (x tengely)'
-              }
+              title: { display: true, text: 'Index' }
             },
             y: {
               beginAtZero: true,
-              title: {
-                display: true,
-                text: 'Magasság'
-              }
+              title: { display: true, text: 'Magasság' }
             }
           }
         }

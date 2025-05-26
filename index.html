@@ -49,7 +49,6 @@
         return;
       }
 
-      // Max vízmennyiség számítása + indexek mentése
       let left = 0, right = height.length - 1;
       let maxArea = 0, bestLeft = 0, bestRight = 0;
 
@@ -70,7 +69,6 @@
 
       document.getElementById('result').textContent = `Maximális vízmennyiség: ${maxArea}`;
 
-      // Színek beállítása
       const backgroundColors = height.map((_, i) =>
         i === bestLeft || i === bestRight ? 'red' : 'black'
       );

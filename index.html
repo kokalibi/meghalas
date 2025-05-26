@@ -40,19 +40,18 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
-    let chart; // Globális változó a diagramhoz
+    let chart; 
 
     function calculateAndDraw() {
       const input = document.getElementById('heightsInput').value;
       const height = input.split(',').map(Number);
 
-      // Ellenőrzés
+
       if (height.length < 2 || height.some(h => isNaN(h))) {
         document.getElementById('result').textContent = 'Hibás bemenet! Adj meg legalább 2 számot, vesszővel elválasztva.';
         return;
       }
 
-      // Max vízmennyiség számítás
       let left = 0, right = height.length - 1, maxArea = 0;
       while (left < right) {
         const width = right - left;
